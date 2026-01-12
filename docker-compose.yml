@@ -1,0 +1,24 @@
+services:
+  indexer:
+    build: .
+    environment:
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - FAISS_INDEX_DIR=/app/data/faiss_index
+    command: ["python", "scripts/03_build_index_faiss.py"]
+    volumes:
+      - ragdata:/app/data
+
+  bot:
+    build: .
+    depends_on:
+      - indexer
+    environment:
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - FAISS_INDEX_DIR=/app/data/faiss_index
+    ports:
+      - "8000:8000"
+    volumes:
+      - ragdata:/app/data
+
+volumes:
+  ragdata:
